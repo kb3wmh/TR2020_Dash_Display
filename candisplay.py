@@ -1,9 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from diagwindow import Ui_MainWindow
-import time
-import random
 import _thread as thread
+import queue
 
 # PE3 CAN Arbitration IDs
 pe1 = 0x0CFFF048
@@ -22,7 +21,6 @@ pe13 = 0x0CFFFC48
 pe14 = 0x0CFFFD48
 pe15 = 0x0CFFFE48
 pe16 = 0x0CFFD048
-
 
 # Flags allowing modules to be turned on and off
 engineRpmEnabled = True
@@ -96,3 +94,93 @@ def dispEngineTemp(data, ui):
     temp = convertUnsignedToSigned(temp)
 
     temp = round(temp)
+
+def canRx(bus, can_queue):
+    while True:
+        message = bus.recv()
+        can_queue.put(message)
+
+def displayController(ui, can_queue):
+    while True:
+        if (can_queue.empty() != True):
+            msg = can_queue.get()
+            arb_id = msg.arbitration_id
+
+            if (arb_id == pe1):
+                dispRpm(msg.data, ui)
+                dispTps(msg.data, ui)
+
+            elif (arb_id == pe2):
+                dispMap(msg.data, ui)
+                dispLambda(msg.data, ui)
+
+            elif (arb_id == pe3):
+                # No messages from this arbitration ID currently
+                pass
+                
+            elif (arb_id == pe4):
+                # Not currently used
+                pass
+
+            elif (arb_id == pe5):
+                # Not currently used (will be for wheel speed)
+                pass
+
+            elif (arb_id == pe6):
+                dispVoltage(msg.data, ui)
+                dispCoolantTemp(msg.data, ui)
+
+            elif (arb_id == pe7):
+                pass
+
+            elif (arb_id == pe8):
+                pass
+
+            elif (arb_id == pe9):
+                pass
+
+            elif (arb_id == pe10):
+                pass
+
+            elif (arb_id == pe11):
+                pass
+
+            elif (arb_id == pe12):
+                pass
+
+            elif (arb_id == pe13):
+                pass
+
+            elif (arb_id == pe14):
+                pass
+
+            elif (arb_id == pe15):
+                pass
+
+            elif (arb_id == pe16):
+                pass
+
+            else:
+                pass
+
+
+if (__name__ == "__main__"):
+    app = QApplication(sys.argv)
+    window = QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(window)
+
+    window.show()
+
+    can_queue = queue.Queue()
+    
+    try:
+        bus = can.interface.Bus(channel='can0', bustype='socketcan_native')
+        thread.start_new_thread( canRx, (bus, can_queue,))
+        thread.start_new_thread( displayController, (ui, can_queue,))
+        
+    except:
+        print ("Error creating threads...")
+        sys.exit(1)
+            
+    sys.exit(app.exec_())
