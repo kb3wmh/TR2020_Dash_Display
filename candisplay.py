@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from diagwindow import Ui_MainWindow
 import _thread as thread
 import queue
+import can
 
 # PE3 CAN Arbitration IDs
 pe1 = 0x0CFFF048
