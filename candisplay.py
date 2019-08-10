@@ -174,13 +174,13 @@ if (__name__ == "__main__"):
 
     can_queue = queue.Queue()
     
-    try:
-        bus = can.interface.Bus(channel='can0', bustype='socketcan_native')
-        thread.start_new_thread( canRx, (bus, can_queue,))
-        thread.start_new_thread( displayController, (ui, can_queue,))
+    
+    bus = can.interface.Bus(channel='can0', bustype='socketcan_native')
+    thread.start_new_thread( canRx, (bus, can_queue,))
+    thread.start_new_thread( displayController, (ui, can_queue,))
         
-    except:
-        print ("Error creating threads...")
-        sys.exit(1)
+    
+    #    print ("Error creating threads...")
+    #    sys.exit(1)
             
     sys.exit(app.exec_())
