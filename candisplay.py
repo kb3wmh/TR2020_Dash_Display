@@ -58,6 +58,8 @@ def dispVoltage(data, ui):
     
     voltage = (256 * voltLowByte + voltHighByte) * voltScaleFactor
 
+    ui.batt_volt_lcdnumber.display(voltage)
+
 def dispLambda(data, ui):
     lambdaScaleFactor = 0.01
 
@@ -65,7 +67,8 @@ def dispLambda(data, ui):
     lambdaHighByte = data[5]
 
     lambdaVal = (256 * lambdaLowByte + lambdaHighByte) * lambdaScaleFactor
-
+    ui.lambda_lcdnumber.display(lambdaVal)
+    
 def dispMap(data, ui):
     mapScaleFactor = 0.01
 
@@ -73,7 +76,8 @@ def dispMap(data, ui):
     mapHighByte = data[3]
 
     mapVal = (256 * mapLowByte + mapHighByte) * mapScaleFactor
-
+    ui.map_lcdnumber.display(mapVal)
+    
 def dispTps(data, ui):
     tpsScaleFactor = 0.1
 
@@ -83,6 +87,7 @@ def dispTps(data, ui):
     tps = (256 * tpsLowByte + tpsHighByte) * tpsScaleFactor
 
     tps = round(tps)
+    ui.tps_lcdnumber.display(tps)
 
 def dispEngineTemp(data, ui):
     tempScaleFactor = 0.1
@@ -95,6 +100,8 @@ def dispEngineTemp(data, ui):
     temp = convertUnsignedToSigned(temp)
 
     temp = round(temp)
+
+    ui.engine_temp_lcdnumber.display(temp)
 
 def canRx(bus, can_queue):
     while True:
@@ -175,13 +182,13 @@ if (__name__ == "__main__"):
 
     can_queue = queue.Queue()
     
-    
-    bus = can.interface.Bus(channel='can0', bustype='socketcan_native')
-    thread.start_new_thread( canRx, (bus, can_queue,))
-    thread.start_new_thread( displayController, (ui, can_queue,))
+    try:
+        bus = can.interface.Bus(channel='can0', bustype='socketcan_native')
+        thread.start_new_thread( canRx, (bus, can_queue,))
+        thread.start_new_thread( displayController, (ui, can_queue,))
         
-    
-    #    print ("Error creating threads...")
-    #    sys.exit(1)
+    except:
+        print ("Error creating threads...")
+        sys.exit(1)
             
     sys.exit(app.exec_())
