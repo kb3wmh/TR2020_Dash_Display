@@ -115,12 +115,18 @@ def displayController(ui, can_queue):
             arb_id = msg.arbitration_id
 
             if (arb_id == pe1):
-                dispRpm(msg.data, ui)
-                dispTps(msg.data, ui)
+                if (engineRpmEnabled):
+                    dispRpm(msg.data, ui)
+
+                if (tpsEnabled):
+                    dispTps(msg.data, ui)
 
             elif (arb_id == pe2):
-                dispMap(msg.data, ui)
-                dispLambda(msg.data, ui)
+                if (mapEnabled):
+                    dispMap(msg.data, ui)
+
+                if (lambdaEnabled):
+                    dispLambda(msg.data, ui)
 
             elif (arb_id == pe3):
                 # No messages from this arbitration ID currently
@@ -135,8 +141,11 @@ def displayController(ui, can_queue):
                 pass
 
             elif (arb_id == pe6):
-                dispVoltage(msg.data, ui)
-                dispCoolantTemp(msg.data, ui)
+                if (voltageEnabled):
+                    dispVoltage(msg.data, ui)
+
+                if (engineTempEnabled):
+                    dispCoolantTemp(msg.data, ui)
 
             elif (arb_id == pe7):
                 pass
